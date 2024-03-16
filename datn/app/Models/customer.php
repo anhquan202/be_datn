@@ -15,6 +15,5 @@ class customer extends Model
         'phone',
         'gender',
         'email',
-        'password'
     ];
 }

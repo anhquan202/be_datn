@@ -20,4 +20,7 @@ class phone_detail extends Model
         'decription',
         'product_id'
     ];
+    public function product(){
+        return $this->belongsTo(product::class);
+    }
 }

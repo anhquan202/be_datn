@@ -7,6 +7,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Rule;
+
 class ProductRequest extends FormRequest
 {
     /**
@@ -26,7 +27,7 @@ class ProductRequest extends FormRequest
     {
         return [
             //
-            'name' => 'required|string|max:300|regex:/^[A-Za-z0-9]+(?:[-\s][A-Za-z0-9]+)*$/',
+            'name' => 'required|unique:product|string|max:300|regex:/^[A-Za-z0-9]+(?:[-\s][A-Za-z0-9]+)*$/',
             'cost_in' => 'required|integer',
             'cost_out' => 'required|integer',
             'image' => 'required|string|max:300',
@@ -43,6 +44,7 @@ class ProductRequest extends FormRequest
     {
         return [
             'name.required' => 'Tên sản phẩm không được để trống',
+            'name.unique' => 'Tên sản phẩm đã tồn tại',
             'name.regex' => 'Tên sản phẩm không được chứa kí tự đặc biệt',
             'cost_in.required' => 'Giá nhập không được để trống',
             'cost_in.integer' => 'Dữ liệu nhập không hợp lệ, vui lòng nhập lại',
@@ -53,13 +55,20 @@ class ProductRequest extends FormRequest
             'quantity.integer' => 'Dữ liệu nhập không hợp lệ, vui lòng nhập lại',
             'manufacture.required' => 'Hãng sản xuất không được để trống',
             'type_id.required' => 'Loại sản phẩm không được để trống',
-            
+
         ];
     }
     protected function failedValidation(Validator $validator)
     {
+        $errors = $validator->errors()->toArray();
+        $errorMessages = [];
+
+        foreach ($errors as $key => $messages) {
+            $errorMessages[$key] = $messages[0]; // Lấy thông báo lỗi đầu tiên cho mỗi trường
+        }
+
         throw new HttpResponseException(response()->json([
-            'error' => $validator->errors(),
+            'error' => $errorMessages,
         ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY));
     }
 }

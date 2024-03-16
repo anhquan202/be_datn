@@ -21,4 +21,8 @@ class product extends Model
         'manufacture',
         'type_id'
     ];
+    public function type()
+    {
+        return $this->belongsTo(Type::class);
+    }
 }

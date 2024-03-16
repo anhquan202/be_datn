@@ -9,10 +9,9 @@ class invoice extends Model
 {
     use HasFactory;
     protected $table = 'invoice';
+    public $timestamps = false;
     protected $fillable = [
         'id',
-        'orderer_name',
-        'receiver_name',
         'receiver_address',
         'receiver_phone',
         'total_amount',
@@ -21,4 +20,11 @@ class invoice extends Model
         'status',
         'customer_id'
     ];
+    public function details()
+    {
+        return $this->hasMany(invoice_detail::class);
+    }
+    public function customer(){
+        return $this->belongsTo(customer::class);
+    }
 }

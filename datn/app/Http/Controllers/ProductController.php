@@ -5,15 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductRequest;
 use App\Models\product;
 use Illuminate\Http\Request;
+use DB;
 
 class ProductController extends Controller
 {
     //
     public function index($id = null)
     {
-        if ($id == null) {
-            $product = product::all();
-            return response(['data' => $product]);
+        if ($id === null) {
+            $product = product::with('type')
+            ->paginate(10);
+            return response()->json($product);
         } else {
             $product = product::find($id);
             if ($product) {
@@ -67,5 +69,10 @@ class ProductController extends Controller
 
         return response()->json(['products' => $products]);
     }
-
+    public function getTypeID(Request $request)
+    {
+        $typeID = $request->input('typeID');
+        $productsType = product::where('type_id', '=', "$typeID")->with('type')->paginate(10);
+        return response()->json( $productsType);
+    }
 }

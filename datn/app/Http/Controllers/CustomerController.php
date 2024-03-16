@@ -10,8 +10,8 @@ class CustomerController extends Controller
 {
     public function index($id = null){
         if ($id == null){
-            $customer = customer::all();
-            return response(['data'=>$customer]);
+            $customer = customer::paginate(10);
+            return response($customer);
         }else{
             $customer = customer::find($id);
             if($customer){
@@ -65,5 +65,5 @@ class CustomerController extends Controller
 
         return response()->json(['customers' => $customers]);
     }
-
+    
 }

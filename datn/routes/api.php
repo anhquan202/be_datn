@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\TypeController;
+use App\Http\Controllers\Authentication\StaffController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -15,31 +16,29 @@ use Illuminate\Support\Facades\Route;
 |
 // */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 //API Product
-Route::get('products/search', [ProductController::class, 'search']);
-
-Route::get('products/{id?}', [ProductController::class, 'index']);
-
-Route::get('products', [ProductController::class, 'index']);
-
-Route::post('products', [ProductController::class, 'create']);
-
-Route::put('products/{id}', [ProductController::class, 'update']);
-
-Route::delete('products/{id}', [ProductController::class, 'delete']);
+require __DIR__ . "/product_routes.php";
 
 // API Customer
-Route::get('customers/search', [ProductController::class, 'search']);
+require __DIR__ . "/customer_routes.php";
 
-Route::get('customers/{id?}', [ProductController::class, 'index']);
+//API phone details
+require __DIR__ . "/phonedetail_routes.php";
 
-Route::get('customers', [ProductController::class, 'index']);
+//API audio details
+require __DIR__ . "/audiodetail_routes.php";
 
-Route::post('customers', [ProductController::class, 'create']);
+//API computers detail
+require __DIR__ . '/computersdetail_routes.php';
 
-Route::put('customers/{id}', [ProductController::class, 'update']);
+//API type
+Route::get('types', [TypeController::class, 'show']);
 
-Route::delete('customers/{id}', [ProductController::class, 'delete']);
+//API auth
+Route::post('login', [StaffController::class, 'login']);
+
+//API invoice
+Route::post('invoices', [InvoiceController::class, 'create']);
