@@ -19,7 +19,7 @@ class ProductController extends Controller
         } else {
             $product = product::find($id);
             if ($product) {
-                return response(['product' => $product]);
+                return response(['data' => $product]);
             } else {
                 return response(['error' => 'Not found data']);
             }
