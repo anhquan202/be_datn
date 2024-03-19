@@ -2,6 +2,8 @@
 use App\Http\Controllers\ProductController;
 
 Route::get('products/search', [ProductController::class, 'search']);
+//test
+Route::get('upload', [ProductController::class, 'upload']);
 
 Route::get('products/producttype', [ProductController::class, 'getTypeID']);
 
