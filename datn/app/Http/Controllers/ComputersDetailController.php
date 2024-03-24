@@ -15,7 +15,7 @@ class ComputersDetailController extends Controller
         if ($id === null) {
             return response()->json($computersDetail);
         } else {
-            $computersDetail = collect($computersDetail)->firstWhere('id', $id);
+            $computersDetail = computers_detail::with('product')->find($id);
             if ($computersDetail) {
                 return response(['data' => $computersDetail]);
             } else {

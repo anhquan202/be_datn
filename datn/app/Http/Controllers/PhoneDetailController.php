@@ -13,9 +13,9 @@ class PhoneDetailController extends Controller
     {
         $phoneDetail = phone_detail::with('product')->paginate(10);
         if ($id === null) {
-            return response([$phoneDetail]);
+            return response($phoneDetail);
         } else {
-            $phoneDetail = phone_detail::find($id);
+            $phoneDetail = phone_detail::with('product')->find($id);
             if ($phoneDetail) {
                 return response(['data' => $phoneDetail]);
             } else {

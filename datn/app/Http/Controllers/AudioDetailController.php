@@ -15,9 +15,9 @@ class AudioDetailController extends Controller
             $audioDetails = audio_detail::with('product')->paginate(10);
             return response($audioDetails);
         } else {
-            $audioDetails = audio_detail::find($id);
+            $audioDetails = audio_detail::with('product')->find($id);
             if ($audioDetails) {
-                return response($audioDetails);
+                return response(['data' => $audioDetails]);
             } else {
                 return response(['error' => 'Not found data']);
             }
