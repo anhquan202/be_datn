@@ -7,6 +7,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Rule;
+use App\Models\product;
 
 class ProductRequest extends FormRequest
 {
@@ -25,21 +26,43 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
-            'name' => 'required|unique:product|string|max:300|regex:/^[A-Za-z0-9]+(?:[-\s][A-Za-z0-9]+)*$/',
-            'cost_in' => 'required|integer',
-            'cost_out' => 'required|integer',
-            'image' => 'required|string|max:300',
-            'quantity' => 'required|integer',
-            'manufacture' => 'required|string|max:300',
-            'type_id' => [
-                'required',
-                'integer',
-                Rule::exists('type', 'id')
-            ]
-        ];
+        if (request()->isMethod('post')){
+            $rules = [
+                //
+                'name' => 'required|unique:product|string|max:300|regex:/^[A-Za-z0-9]+(?:[-\s][A-Za-z0-9]+)*$/',
+                'cost_in' => 'required|integer',
+                'cost_out' => 'required|integer',
+                'image' => 'required|image|mimes:jpg,png,jpeg',
+                'quantity' => 'required|integer',
+                'manufacture' => 'required|string|max:300',
+                'type_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('type', 'id')
+                ]
+            ];
+        }
+
+        // Kiểm tra xem trường 'image' có tập tin được chọn không
+        else {
+            $rules = [
+                'name' => 'required|string|max:300|regex:/^[A-Za-z0-9]+(?:[-\s][A-Za-z0-9]+)*$/',
+                'cost_in' => 'required|integer',
+                'cost_out' => 'required|integer',
+                'image' => 'nullable|image|mimes:jpg,png,jpeg',
+                'quantity' => 'required|integer',
+                'manufacture' => 'required|string|max:300',
+                'type_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('type', 'id')
+                ]
+            ];
+        }
+
+        return $rules;
     }
+
     public function messages()
     {
         return [
