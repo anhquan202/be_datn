@@ -16,9 +16,9 @@ use Illuminate\Support\Facades\Route;
 |
 // */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
 //API Product
 require __DIR__ . "/product_routes.php";
 
@@ -41,4 +41,4 @@ Route::get('types', [TypeController::class, 'show']);
 Route::post('login', [StaffController::class, 'login']);
 
 //API invoice
-Route::post('invoices', [InvoiceController::class, 'create']);
+require __DIR__ . '/invoice_routes.php';

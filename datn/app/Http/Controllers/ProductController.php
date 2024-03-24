@@ -5,16 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductRequest;
 use App\Models\product;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Str;
+use Storage;
 
+require_once 'c:\xampp\htdocs\be_datn\datn\vendor\autoload.php';
 class ProductController extends Controller
 {
-    //
     public function index($id = null)
     {
         if ($id === null) {
             $product = product::with('type')
-            ->paginate(10);
+                ->paginate(10);
             return response()->json($product);
         } else {
             $product = product::find($id);
@@ -28,18 +29,55 @@ class ProductController extends Controller
     public function create(ProductRequest $request)
     {
         try {
-            $product = product::create($request->all());
+
+            $imagePath = Str::random(32) . "." . $request->image->getClientOriginalName();
+            $product = product::create([
+                'name' => $request->name,
+                'cost_in' => $request->cost_in,
+                'cost_out' => $request->cost_out,
+                'quantity' => $request->quantity,
+                'image' => $imagePath,
+                'manufacture' => $request->manufacture,
+                'type_id' => $request->type_id,
+            ]);
+            Storage::disk('public')->put($imagePath, file_get_contents($request->image));
             return response(['message' => 'Dữ liệu đã được thêm thành công', 'data' => $product], 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage(), 'message' => 'Đã có lỗi xảy ra'], 500);
         }
+
     }
-    public function update($id, ProductRequest $request)
+    public function update(ProductRequest $request, $id)
     {
         try {
-            $product = product::update($request->all());
-            return response(['message' => 'Dữ liệu đã được thêm thành công', 'data' => $product], 201);
+            $product = product::find($id);
+            if (!$product) {
+                return response()->json(['error' => 'Sản phẩm không tồn tại'], 404);
+            } else {
+                $imagePath = $product->image; // Khởi tạo imagePath với giá trị hiện tại của hình ảnh
+                if ($request->image) {
+                    $storage = Storage::disk('public');
+                    if ($storage->exists($product->image)) {
+                        $storage->delete($product->image);
+                    }
+                    $imagePath = Str::random(32) . "." . $request->image->getClientOriginalName();
+                    $storage->put($imagePath, file_get_contents($request->image));
+                }
+
+                $product->update([
+                    'name' => $request->name,
+                    'cost_in' => $request->cost_in,
+                    'cost_out' => $request->cost_out,
+                    'quantity' => $request->quantity,
+                    'image' => $imagePath,
+                    'manufacture' => $request->manufacture,
+                    'type_id' => $request->type_id,
+                ]);
+
+            }
+            return response()->json(['message' => 'Product was successfully updated']);
         } catch (\Exception $e) {
+
             return response()->json(['error' => $e->getMessage(), 'message' => 'Đã có lỗi xảy ra'], 500);
         }
     }
@@ -73,6 +111,7 @@ class ProductController extends Controller
     {
         $typeID = $request->input('typeID');
         $productsType = product::where('type_id', '=', "$typeID")->with('type')->paginate(10);
-        return response()->json( $productsType);
+        return response()->json($productsType);
     }
+
 }
