@@ -29,16 +29,30 @@ class InvoiceRequest extends FormRequest
             'total_amount' => 'required|numeric',
             'customer_id' => 'required|exists:customer,id',
             'details' => 'required|array|min:1',
+            'details.*.product_id' => 'required',
             'details.*.quantity' => 'required|integer|min:1',
             'details.*.unit_price' => 'required|numeric|min:0',
-            'details.*.total_price' => 'required|numeric|min:0',
-            'details.*.product_id' => 'required|exists:product,id',
+        ];
+    }
+    public function messages(){
+        return [
+            'receiver_address.required' => 'Địa chỉ nhận là bắt buộc',
+            'receiver_phone.required' => 'SĐT là bắt buộc',
+            'total_amount.required' => 'Tổng tiền là bắt buộc',
+            'customer_id.required' => 'Vui lòng chọn tên KH',
+            'details.required' => 'Vui lòng nhập hàng hóa'
         ];
     }
     protected function failedValidation(Validator $validator)
     {
+        $errors = $validator->errors()->toArray();
+        $errorMessages = [];
+
+        foreach ($errors as $key => $messages) {
+            $errorMessages[$key] = $messages[0]; // Lấy thông báo lỗi đầu tiên cho mỗi trường
+        }
         throw new HttpResponseException(response()->json([
-            'error' => $validator->errors(),
+            'error' => $errorMessages,
         ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY));
     }
 }
